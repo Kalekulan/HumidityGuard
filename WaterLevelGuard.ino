@@ -1,113 +1,109 @@
 #include "LowPower.h"
 
-int sensorPin=A6;  //Pin for Analog Output
-//enum led {
-//  ledmodule0.blue,
-//  ledmodule0.green,
-//  ledmodule0.red
-//};
-
 struct RGB {
 	int red;
 	int green;
 	int blue;
 };
 
+RGB const ledmodule[2] = {
+	{2, 3, 4},	//digital pins
+	{5, 6, 7}	//digital pins
+};
 
-RGB const ledmodule0 = {2, 3, 4};
-
-//int const ledmodule0.blue = 2;
-//int const ledmodule0.green = 3;
-//int const ledmodule0.red = 4;
-int sensorvalue = 0;
-int const sleep = 1000 * 60 * 5; //five minutes
-int i = 0;
-int STATE = 0;
-int counter = 0;
+int const sensorPin=A6;  //Pin for Analog Output
 
 void setup(){
-  Serial.begin(9600);
-  pinMode(ledmodule0.blue, OUTPUT);  
-  pinMode(ledmodule0.green, OUTPUT);  
-  pinMode(ledmodule0.red, OUTPUT);
-  digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
-  digitalWrite(ledmodule0.red, LOW);  //Turn Led on
-  digitalWrite(ledmodule0.green, LOW);  //Turn Led on
-  Serial.println("Starting up...");
-  for(i = 0; i<= 4; i++) { //Startup led sequence
-	  digitalWrite(ledmodule0.blue, HIGH);
-	  delay(200);
-	  digitalWrite(ledmodule0.blue, LOW);
-	  digitalWrite(ledmodule0.red, HIGH);
-	  delay(200);
-	  digitalWrite(ledmodule0.red, LOW);
-	  digitalWrite(ledmodule0.green, HIGH);
-	  delay(200);
-	  digitalWrite(ledmodule0.green, LOW);	  
+	int i = 0;
+	Serial.begin(9600);
+	pinMode(ledmodule[0].blue, OUTPUT);  
+	pinMode(ledmodule[0].green, OUTPUT);  
+	pinMode(ledmodule[0].red, OUTPUT);
+	digitalWrite(ledmodule[0].blue, LOW);		//Turn Led LOW
+	digitalWrite(ledmodule[0].red, LOW);		//Turn Led LOW
+	digitalWrite(ledmodule[0].green, LOW);	//Turn Led LOW
+	Serial.println("Starting up...");
+
+	for(i = 0; i<= 4; i++) {	//Startup led sequence
+		digitalWrite(ledmodule[0].blue, HIGH);
+		delay(200);
+		digitalWrite(ledmodule[0].blue, LOW);
+		digitalWrite(ledmodule[0].red, HIGH);
+		delay(200);
+		digitalWrite(ledmodule[0].red, LOW);
+		digitalWrite(ledmodule[0].green, HIGH);
+		delay(200);
+		digitalWrite(ledmodule[0].green, LOW);	  
   }
 }
 
-void SetStatus(int sensorvalue) {
+void SetStatus(int sensorvalue){
 	
 	int const SAFE = 100;
 	int const WARNING = 600;
 	int const DANGER = 600;
 	
 	if(sensorvalue >= SAFE && sensorvalue <= WARNING){  //Compare analog value with threshold 
-		digitalWrite(ledmodule0.green, LOW);  //Turn Led on
-		digitalWrite(ledmodule0.red, LOW);  //Turn Led on
-		digitalWrite(ledmodule0.blue, HIGH);  //Turn Led on
+		//ledmodule[0] = (RGB){LOW, LOW, HIGH};
+		digitalWrite(ledmodule[0].green, LOW);  
+		digitalWrite(ledmodule[0].red, LOW);  
+		digitalWrite(ledmodule[0].blue, HIGH);  
 	}  
 	else if(sensorvalue > DANGER){ 
-		digitalWrite(ledmodule0.green, LOW);  //Turn Led on
-		digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
-		digitalWrite(ledmodule0.red, HIGH);  //Turn Led on
+		//ledmodule[0] = (RGB){HIGH, LOW, LOW};
+		digitalWrite(ledmodule[0].green, LOW);  
+		digitalWrite(ledmodule[0].blue, LOW);  
+		digitalWrite(ledmodule[0].red, HIGH);  
 	} 
 	else if(sensorvalue < SAFE){
-		digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
-		digitalWrite(ledmodule0.red, LOW);  //Turn Led on
-		digitalWrite(ledmodule0.green, HIGH);  //Turn Led off
+		//ledmodule[0] = (RGB){LOW, HIGH, LOW};
+		digitalWrite(ledmodule[0].blue, LOW);  
+		digitalWrite(ledmodule[0].red, LOW);  
+		digitalWrite(ledmodule[0].green, HIGH);  
 	
 	}
 }
 
-void TurnOffLeds() {
+void TurnOffLeds(){
 	Serial.println("Turning off LED module");
-	digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
-	digitalWrite(ledmodule0.red, LOW);  //Turn Led on
-	digitalWrite(ledmodule0.green, LOW);  //Turn Led off	
-	
+	//ledmodule[0] = (RGB){LOW, LOW, LOW};
+	digitalWrite(ledmodule[0].blue, LOW);  
+	digitalWrite(ledmodule[0].red, LOW);  
+	digitalWrite(ledmodule[0].green, LOW);  
 }
 
 
 void loop(){
+	int STATE = 0;
+	int counter = 0;
+	int avgRead = 0;
+	int numReads = 5;
+	int sensorvalue = 0;
+	int const READ = 0;
+	int const POWERSAVE = 1;
 
-int avgRead = 0;
-int numReads = 5;
-
-
-	switch (STATE) {
-		case 0:
+	switch (STATE){
+		case READ:
 			Serial.print("STATE=");
 			Serial.println(STATE);
-			for(int i=1; i<=numReads; i++){
+			for(int i = 1; i <= numReads; i++){
 				sensorvalue = analogRead(sensorPin);  //Read the analog value
 				Serial.print("Analog: ");  
 				Serial.println(sensorvalue);  //Print the analog value
-				avgRead = avgRead + sensorvalue;
-				delay(500);
+				avgRead = avgRead + sensorvalue; 
+				delay(500); 
 			}
-			if (counter != 0) {
-				avgRead = avgRead / numReads;
+			if (counter != 0) { //Don't read first avgRead since there's some current rush...
+				avgRead = avgRead / numReads;	//Average value of the readings
 				Serial.print("avgRead=");
 				Serial.println(avgRead);
 				SetStatus(avgRead);
 			}
 			delay(3000); //3 sec
 			counter++;
-			if(counter >= 3) STATE=1;
+			if(counter >= 3) STATE=POWERSAVE;	//Read is done. Go to sleep!
 			break;
-		case 1:
+		case POWERSAVE:
 			Serial.print("STATE=");
 			Serial.println(STATE);
 			TurnOffLeds();
@@ -120,8 +116,5 @@ int numReads = 5;
 		  // default is optional
 		break;
 	}
-  
-  
-  
-	//delay(sleep);
+
 }
