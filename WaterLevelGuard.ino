@@ -2,14 +2,24 @@
 
 int sensorPin=A6;  //Pin for Analog Output
 //enum led {
-//  BLUE,
-//  GREEN,
-//  RED
+//  ledmodule0.blue,
+//  ledmodule0.green,
+//  ledmodule0.red
 //};
-int const BLUE = 2;
-int const GREEN = 3;
-int const RED = 4;
-int sensorvalue=0;
+
+struct RGB {
+	int red;
+	int green;
+	int blue;
+};
+
+
+RGB const ledmodule0 = {2, 3, 4};
+
+//int const ledmodule0.blue = 2;
+//int const ledmodule0.green = 3;
+//int const ledmodule0.red = 4;
+int sensorvalue = 0;
 int const sleep = 1000 * 60 * 5; //five minutes
 int i = 0;
 int STATE = 0;
@@ -17,23 +27,23 @@ int counter = 0;
 
 void setup(){
   Serial.begin(9600);
-  pinMode(BLUE, OUTPUT);  
-  pinMode(GREEN, OUTPUT);  
-  pinMode(RED, OUTPUT);
-  digitalWrite(BLUE, LOW);  //Turn Led on
-  digitalWrite(RED, LOW);  //Turn Led on
-  digitalWrite(GREEN, LOW);  //Turn Led on
+  pinMode(ledmodule0.blue, OUTPUT);  
+  pinMode(ledmodule0.green, OUTPUT);  
+  pinMode(ledmodule0.red, OUTPUT);
+  digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
+  digitalWrite(ledmodule0.red, LOW);  //Turn Led on
+  digitalWrite(ledmodule0.green, LOW);  //Turn Led on
   Serial.println("Starting up...");
   for(i = 0; i<= 4; i++) { //Startup led sequence
-	  digitalWrite(BLUE, HIGH);
+	  digitalWrite(ledmodule0.blue, HIGH);
 	  delay(200);
-	  digitalWrite(BLUE, LOW);
-	  digitalWrite(RED, HIGH);
+	  digitalWrite(ledmodule0.blue, LOW);
+	  digitalWrite(ledmodule0.red, HIGH);
 	  delay(200);
-	  digitalWrite(RED, LOW);
-	  digitalWrite(GREEN, HIGH);
+	  digitalWrite(ledmodule0.red, LOW);
+	  digitalWrite(ledmodule0.green, HIGH);
 	  delay(200);
-	  digitalWrite(GREEN, LOW);	  
+	  digitalWrite(ledmodule0.green, LOW);	  
   }
 }
 
@@ -44,28 +54,28 @@ void SetStatus(int sensorvalue) {
 	int const DANGER = 600;
 	
 	if(sensorvalue >= SAFE && sensorvalue <= WARNING){  //Compare analog value with threshold 
-		digitalWrite(GREEN, LOW);  //Turn Led on
-		digitalWrite(RED, LOW);  //Turn Led on
-		digitalWrite(BLUE, HIGH);  //Turn Led on
+		digitalWrite(ledmodule0.green, LOW);  //Turn Led on
+		digitalWrite(ledmodule0.red, LOW);  //Turn Led on
+		digitalWrite(ledmodule0.blue, HIGH);  //Turn Led on
 	}  
 	else if(sensorvalue > DANGER){ 
-		digitalWrite(GREEN, LOW);  //Turn Led on
-		digitalWrite(BLUE, LOW);  //Turn Led on
-		digitalWrite(RED, HIGH);  //Turn Led on
+		digitalWrite(ledmodule0.green, LOW);  //Turn Led on
+		digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
+		digitalWrite(ledmodule0.red, HIGH);  //Turn Led on
 	} 
 	else if(sensorvalue < SAFE){
-		digitalWrite(BLUE, LOW);  //Turn Led on
-		digitalWrite(RED, LOW);  //Turn Led on
-		digitalWrite(GREEN, HIGH);  //Turn Led off
+		digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
+		digitalWrite(ledmodule0.red, LOW);  //Turn Led on
+		digitalWrite(ledmodule0.green, HIGH);  //Turn Led off
 	
 	}
 }
 
 void TurnOffLeds() {
 	Serial.println("Turning off LED module");
-	digitalWrite(BLUE, LOW);  //Turn Led on
-	digitalWrite(RED, LOW);  //Turn Led on
-	digitalWrite(GREEN, LOW);  //Turn Led off	
+	digitalWrite(ledmodule0.blue, LOW);  //Turn Led on
+	digitalWrite(ledmodule0.red, LOW);  //Turn Led on
+	digitalWrite(ledmodule0.green, LOW);  //Turn Led off	
 	
 }
 
