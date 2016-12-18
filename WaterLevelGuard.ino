@@ -1,7 +1,5 @@
 #include "LowPower.h"	//Needs to be added separately. See submodule(s)
 
-
-
 struct RGB {
 	int red;
 	int green;
@@ -15,7 +13,7 @@ RGB const ledmodule[NUMBEROFMODULES] = {	//You also needs to add number of rows 
 	{5, 6, 7}	//digital pins
 };
 
-int const sensorPin=A6;  //Pin for Analog Output
+int const sensorPins[NUMBEROFMODULES] = {A6, A7};  //You also needs to add number of indexes equal to NUMBEROFMODULES
 
 void setup(){
 	
@@ -50,10 +48,8 @@ void loop(){
 	int STATE = 0;
 	int moduleCounter = 0;
 	int readCounter = 0;
-	boolean rSetStatus;
+	int rSetStatus;
 	
-	bajs(&ledmodule[0]);
-	//TurnOffLeds(ledmodule[0]);
 	
 	switch (STATE){
 		case READ:	//Will stay in this loop for 60sec then go to POWERSAVE
@@ -62,7 +58,7 @@ void loop(){
 			
 			for(readCounter = 0; readCounter < numReadSets; readCounter++){
 				for(moduleCounter = 0; moduleCounter < NUMBEROFMODULES; moduleCounter++) {
-					waterLevel[moduleCounter] = WaterLevelRead(numReads);
+					waterLevel[moduleCounter] = WaterLevelRead(sensorPins[moduleCounter], numReads);
 					Serial.print("waterLevel[");
 					Serial.print(moduleCounter);
 					Serial.print("]=");
@@ -96,7 +92,7 @@ void loop(){
 
 }
 
-int WaterLevelRead(int const numReads){
+int WaterLevelRead(int const sensorPin, int const numReads){
 	
 	int sensorvalue[numReads];
 	int avgRead = 0;
@@ -117,9 +113,6 @@ int WaterLevelRead(int const numReads){
 
 	return avgRead;
 }
-
-void bajs(const struct RGB *x) {}
-
 
 int SetStatus(const struct RGB *leds, int value){
 	
