@@ -18,23 +18,32 @@ int const sensorPins[NUMBEROFMODULES] = {A6, A7};  //You also needs to add numbe
 void setup(){
 	
 	Serial.begin(9600);
-	pinMode(ledmodule[0].red, OUTPUT);
-	pinMode(ledmodule[0].green, OUTPUT); 
-	pinMode(ledmodule[0].blue, OUTPUT);  
-	for(int r=0; r < NUMBEROFMODULES; r++) TurnOffLeds(&ledmodule[r]);
+	//pinMode(ledmodule[0].red, OUTPUT);
+	//pinMode(ledmodule[0].green, OUTPUT); 
+	//pinMode(ledmodule[0].blue, OUTPUT);  
+	for(int r=0; r < NUMBEROFMODULES; r++) {
+		pinMode(ledmodule[r].red, OUTPUT);
+		pinMode(ledmodule[r].green, OUTPUT); 
+		pinMode(ledmodule[r].blue, OUTPUT);  
+		
+		TurnOffLeds(&ledmodule[r]);
+	}
 		//TurnOffLeds(ledmodule[r].red, ledmodule[r].green, ledmodule[r].blue);
 	Serial.println("Starting up...");
 
+	
 	for(int i = 0; i<= 4; i++) {	//Startup led sequence
-		digitalWrite(ledmodule[0].blue, HIGH);
-		delay(200);
-		digitalWrite(ledmodule[0].blue, LOW);
-		digitalWrite(ledmodule[0].red, HIGH);
-		delay(200);
-		digitalWrite(ledmodule[0].red, LOW);
-		digitalWrite(ledmodule[0].green, HIGH);
-		delay(200);
-		digitalWrite(ledmodule[0].green, LOW);	  
+		for(int x = 0; x < NUMBEROFMODULES; x++) {
+			digitalWrite(ledmodule[x].blue, HIGH);
+			delay(200);
+			digitalWrite(ledmodule[x].blue, LOW);
+			digitalWrite(ledmodule[x].red, HIGH);
+			delay(200);
+			digitalWrite(ledmodule[x].red, LOW);
+			digitalWrite(ledmodule[x].green, HIGH);
+			delay(200);
+			digitalWrite(ledmodule[x].green, LOW);	  
+		}
 	}
 }
 
