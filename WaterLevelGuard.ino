@@ -9,19 +9,21 @@ struct RGB {
 int const NUMBEROFMODULES = 2;	//Change this variable as to how many water sensors and led modules you have (you need one of each)
 
 RGB const ledmodule[NUMBEROFMODULES] = {	//You also needs to add number of rows equal to NUMBEROFMODULES
-	{2, 3, 4},	//digital pins
+	{2, 3, 4},	//digital pins - R , G, B
 	{5, 6, 7}	//digital pins
 };
 
 int const sensorPins[NUMBEROFMODULES] = {A6, A7};  //You also needs to add number of indexes equal to NUMBEROFMODULES
 
+int STATE = 0;
+
 void setup(){
-	
+	int r = 0;
 	Serial.begin(9600);
 	//pinMode(ledmodule[0].red, OUTPUT);
 	//pinMode(ledmodule[0].green, OUTPUT); 
 	//pinMode(ledmodule[0].blue, OUTPUT);  
-	for(int r=0; r < NUMBEROFMODULES; r++) {
+	for(r = 0; r < NUMBEROFMODULES; r++) {	//Setting pinmode=OUTPUT for leds
 		pinMode(ledmodule[r].red, OUTPUT);
 		pinMode(ledmodule[r].green, OUTPUT); 
 		pinMode(ledmodule[r].blue, OUTPUT);  
@@ -32,29 +34,27 @@ void setup(){
 	Serial.println("Starting up...");
 
 	
-	for(int i = 0; i<= 4; i++) {	//Startup led sequence
-		for(int x = 0; x < NUMBEROFMODULES; x++) {
-			digitalWrite(ledmodule[x].blue, HIGH);
+	for(r = 0; r<= 4; r++) {	//Startup blinking led sequence
+		for(int i = 0; i < NUMBEROFMODULES; i++) {
+			digitalWrite(ledmodule[i].blue, HIGH);
 			delay(200);
-			digitalWrite(ledmodule[x].blue, LOW);
-			digitalWrite(ledmodule[x].red, HIGH);
+			digitalWrite(ledmodule[i].blue, LOW);
+			digitalWrite(ledmodule[i].red, HIGH);
 			delay(200);
-			digitalWrite(ledmodule[x].red, LOW);
-			digitalWrite(ledmodule[x].green, HIGH);
+			digitalWrite(ledmodule[i].red, LOW);
+			digitalWrite(ledmodule[i].green, HIGH);
 			delay(200);
-			digitalWrite(ledmodule[x].green, LOW);	  
+			digitalWrite(ledmodule[i].green, LOW);	  
 		}
 	}
 }
 
 void loop(){
-
 	int const numReads = 5;
 	int const numReadSets = 10;
 	int waterLevel[NUMBEROFMODULES];
 	int const READ = 0;
 	int const POWERSAVE = 1;
-	int STATE = 0;
 	int moduleCounter = 0;
 	int readCounter = 0;
 	int rSetStatus;
@@ -65,8 +65,8 @@ void loop(){
 			Serial.print("STATE=");
 			Serial.println(STATE);
 			
-			for(readCounter = 0; readCounter < numReadSets; readCounter++){
-				for(moduleCounter = 0; moduleCounter < NUMBEROFMODULES; moduleCounter++) {
+			for(readCounter = 0; readCounter < numReadSets; readCounter++){ 	//The number of readings
+				for(moduleCounter = 0; moduleCounter < NUMBEROFMODULES; moduleCounter++) {	//Read every module
 					waterLevel[moduleCounter] = WaterLevelRead(sensorPins[moduleCounter], numReads);
 					Serial.print("waterLevel[");
 					Serial.print(moduleCounter);
