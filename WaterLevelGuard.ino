@@ -51,7 +51,7 @@ void setup(){
 
 void loop(){
 	int const numReads = 5;
-	int const numReadSets = 10;
+	int const numReadSets = 5;
 	int waterLevel[NUMBEROFMODULES];
 	int const READ = 0;
 	int const POWERSAVE = 1;
@@ -125,7 +125,7 @@ int WaterLevelRead(int const sensorPin, int const numReads){
 
 int SetStatus(const struct RGB *leds, int value){
 	
-	int const SAFE = 100;		//SAFE is between 0 -> 100
+	int const SAFE = 200;		//SAFE is between 0 -> 100
 	int const WARNING = 600;	//WARNING is between 101 -> 600
 	int const DANGER = 1023;	//DANGER is between 601 -> 1023
 	
